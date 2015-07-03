@@ -1,0 +1,66 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+<div class="row">
+    <div class="col-md-12">
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title">
+            Mostra tipo camera					<small>pagina dettagli per il tipo di camera</small>
+        </h3>
+        <ul class="page-breadcrumb breadcrumb">
+            <li>
+                <i class="fa fa-home"></i>
+                <a href="index.html">Home</a>
+                <i class="fa fa-angle-right"></i>
+            </li>
+            <li><a href="{{ path('tipocamera') }}">Tipo camera</a><i class="fa fa-angle-right"></i></li>
+            <li><a href="#">Mostra</a></li>
+            <li class="pull-right">
+                <div id="dashboard-report-range" class="dashboard-date-range tooltips" data-placement="top" data-original-title="Change dashboard date range">
+                    <i class="fa fa-calendar"></i>
+                    <span></span>
+                    <i class="fa fa-angle-down"></i>
+                </div>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet">
+            <div class="portlet-body">
+                <div class="table-toolbar">
+                    <div class="btn-group">
+                        <a href="{{ path('stanza_edit', { 'id': entity.id }) }}"><button id="gestore-dettaglio_edit" class="btn purple"><i class="fa fa-edit"></i>
+                            </button>
+                        </a>
+                        <a href="{{ path('stanza_delete', { 'id': entity.id }) }}" data-confirm="Confermi?" data-target="#dataConfirmModal" data-toggle="modal"><button id="gestore-dettaglio_delete" class="btn red"><i class="fa fa-trash-o"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover table-bordered" id="stanza-dettaglio">
+                    <tbody>
+                        <tr>
+                            <th>Id</th>
+                            <td>{{ entity.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Numero</th>
+                            <td>{{ entity.numero }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo Camera</th>
+                            <td>{{ entity.tipo.nome }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{{ pulsante_indietro() }}
+{% endblock %}

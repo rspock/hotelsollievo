@@ -1,0 +1,6 @@
+services:
+  almabundle.twig.indietro_extension:
+    class: AlmaBundle\TwigExtension\IndietroTwigExtension
+    arguments: [@service_container]
+    tags:
+      - { name: twig.extension }

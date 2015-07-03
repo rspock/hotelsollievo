@@ -1,0 +1,227 @@
+{% extends '::base.html.twig' %}
+
+{% form_theme voce_spesa_form 'AlmaBundle:Form:form_base.html.twig' %}
+{% form_theme modifica_voce_spesa_form 'AlmaBundle:Form:form_base.html.twig' %}
+
+
+{% block body -%}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+            <h3 class="page-title">
+                Voci spesa	<small>elenco di tutte le voci spesa di un conto</small>
+            </h3>
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <i class="fa fa-home"></i>
+                    <a href="index.html">Home</a>
+                    <i class="fa fa-angle-right"></i>
+                </li>
+                <li><a href="{{ path("ospite")}}">Ospite</a><i class="fa fa-angle-right"></i></li>
+                <li><a href="#">Elenco voci spesa</a></li>
+                <li class="pull-right">
+                    <div id="dashboard-report-range" class="dashboard-date-range tooltips" data-placement="top" data-original-title="Change dashboard date range">
+                        <i class="fa fa-calendar"></i>
+                        <span></span>
+                        <i class="fa fa-angle-down"></i>
+                    </div>
+                </li>
+            </ul>
+            <!-- END PAGE TITLE & BREADCRUMB-->
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-md-12">
+            <div class="portlet box blue">
+                <div class="portlet-title">
+                    <div class="caption"><i class="fa fa-reorder"></i>Conto</div>
+                </div>
+                <div class="portlet-body">
+                    <table class="table table-striped table-hover table-bordered" id="ospite-dettaglio">
+                        <tbody>
+                            <tr>
+                                <th>Id</th>
+                                <td>{{ conto.id }}</td>
+                            </tr><tr>
+                                <th>Ospite</th>
+                                <td>{{ conto.persona.nome }} {{ conto.persona.cognome }}</td>
+                            </tr><tr>
+                                <th>Stato</th>
+                                <td>{{ conto.stato }}</td>
+                            </tr>
+                                {% if conto.dataApertura is not empty %}
+                                <tr>
+                                    <th>Data Apertura</th>
+                                    <td>{{ conto.dataApertura|date('Y-m-d H:i:s') }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if conto.dataPagamento is not empty %}
+                                <tr>
+                                    <th>Data Pagamento</th>
+                                    <td>{{ conto.dataPagamento|date('Y-m-d H:i:s') }}</td>
+                                </tr>
+                                {% endif %}
+                            <tr>
+                                <th>Saldo</th>
+                                <td>{% if conto.saldo %} Si {% else %} No {% endif %}</td>
+                            </tr><tr>
+                                <th>Totale</th>
+                                <td>{{ conto.totale }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-md-12">
+            <div class="portlet box green">
+                <div class="portlet-title">
+                    <div class="caption"><i class="fa fa-reorder"></i>Voci spesa</div>
+                </div>
+                <div class="portlet-body">
+                    {% if conto.stato == "APERTO" %}
+                    <div class="table-toolbar">
+                        <div class="btn-group">
+                            <a href="#"  onclick="mostraModaleVoceSpesa('{{ conto.persona.id }}')" class="btn btn-sm green" ><i class="fa fa-plus"></i></a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <table class="table table-striped table-hover table-bordered" id="voci-spesa-dettaglio">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Tipo</th>
+                            <th>Data</th>
+                            <th>Importo</th>
+                            <th>Azioni</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for voceSpesa in vociSpesa %}
+                            <tr>
+                                <td>{{ voceSpesa.id }}</td>
+                                <td>{{ voceSpesa.tipo.descrizione }}</td>
+                                <td>{% if voceSpesa.dataRegistrazione %}{{ voceSpesa.dataRegistrazione|date('Y-m-d H:i:s') }}{% endif %}</td>
+                                <td>{{ voceSpesa.importo }}</td>
+                                <td>
+                                    {% if conto.stato == "APERTO" %}
+                                        <a href="javascript:void(0);"  onclick="mostraModaleModificaVoceSpesa('{{ voceSpesa.id }}',{{ voceSpesa.importo }},{{ voceSpesa.tipo.id }})" class="btn btn-sm purple"><i class="fa fa-edit"></i></a>
+                                        <a href="{{ path('voce_spesa_delete', { 'id': voceSpesa.id }) }}" class="btn btn-sm red" data-confirm="Confermi?" data-target="#dataConfirmModal" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-md-12">
+            {{ pulsante_indietro() }}
+        </div>
+    </div>
+    {% if conto.stato == "APERTO" %}
+    <div id="modificaVoceSpesaModal" class="modal fade" role="dialog" aria-labelledby="mainLabel" aria-hidden="true">
+        {{ form_start(modifica_voce_spesa_form, {'attr': {'id': 'form_voce_spesa_update'}}) }}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h3 id="mainLabel">Modifica voce spesa</h3>
+                </div>
+                <div class="modal-body">
+                        <div class="col-md-12">
+                            {{ form_rest(modifica_voce_spesa_form) }}
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Annulla</button>
+                    <input type="submit" class="btn btn-primary" id="voceSpesaModifica" value="Modifica">
+                </div>
+            </div>
+        </div>
+        {{ form_end(modifica_voce_spesa_form) }}
+    </div>
+
+    <div id="voceSpesaModal" class="modal fade" role="dialog" aria-labelledby="mainLabel" aria-hidden="true">
+        {{ form_start(voce_spesa_form) }}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h3 id="mainLabel">Aggiunta voce spesa</h3>
+                </div>
+                <div class="modal-body">
+                        <div class="col-md-12">
+                            {{ form_rest(voce_spesa_form) }}
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Annulla</button>
+                    <input type="submit" class="btn btn-primary" id="voceSpesaConferma" value="Conferma">
+                </div>
+            </div>
+        </div>
+        {{ form_end(voce_spesa_form) }}
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% if conto.stato == "APERTO" %}
+
+    {%block  page_level_scripts %}
+        <script type="text/javascript">
+            function mostraModaleModificaVoceSpesa(voceSpesaId, importo, tipoVoceSpesaId){
+                var url = $("#form_voce_spesa_update").attr("action");
+                $("#form_voce_spesa_update").attr("action",url.replace("-",voceSpesaId));
+                $("#almabundle_vocespesa_importo").val(importo);
+                $("#almabundle_vocespesa_tipo").val(tipoVoceSpesaId);
+                $('#modificaVoceSpesaModal').modal('toggle');
+            }
+        </script>
+        <script type="text/javascript">
+            function mostraModaleVoceSpesa(ospiteId){
+                $("#almabundle_ospitevocespesa_ospiteId").val(ospiteId);
+                $('#voceSpesaModal').modal('toggle');
+            }
+        </script>
+    {% endblock%}
+
+    {%block  jquery_page_document_ready %}
+         <script>
+             var tipiVociSpesa = eval("{{ tipi_voci_spesa|e('js') }}");
+
+             function settaValoreImporto(tipoVoceSpesaId){
+                 tipiVociSpesa.forEach(function(entry) {
+                     if(tipoVoceSpesaId == entry.id){
+                         $("#almabundle_ospitevocespesa_importo").val(entry.prezzo_standard);
+                     }
+                 });
+             }
+
+             jQuery(document).ready(function() {
+
+                 $('#almabundle_ospitevocespesa_descrizione').parent("div").parent("div").hide();
+                 $('#almabundle_ospitevocespesa_sconto').parent("span").parent("div").parent("div").hide();
+
+                 settaValoreImporto($('#almabundle_ospitevocespesa_tipoVoceSpesa').val());
+                 $('#almabundle_ospitevocespesa_tipoVoceSpesa').on('change', function() {
+                     settaValoreImporto($(this).val());
+                     if($(this).val()==-1) {
+                         $('#almabundle_ospitevocespesa_descrizione').parent("div").parent("div").show();
+                         $('#almabundle_ospitevocespesa_descrizione').parent("div").show();
+                         $('#almabundle_ospitevocespesa_sconto').parent("span").parent("div").parent("div").show();
+                         $('#almabundle_ospitevocespesa_sconto').parent("span").parent("div").show();
+                     }else{
+                         $('#almabundle_ospitevocespesa_sconto').parent("span").parent("div").parent("div").hide();
+                     }
+                 });
+             });
+         </script>
+    {% endblock%}
+
+{% endif %}

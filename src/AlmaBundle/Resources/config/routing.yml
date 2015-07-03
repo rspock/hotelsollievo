@@ -1,0 +1,31 @@
+alma_tipocamera:
+    resource: "@AlmaBundle/Resources/config/routing/tipocamera.yml"
+    prefix:   /tipocamera
+
+alma_tipi_voce_spesa:
+    resource: "@AlmaBundle/Controller/TipoVoceSpesaController.php"
+    type:     annotation
+
+alma_ospite:
+    resource: "@AlmaBundle/Controller/OspiteController.php"
+    type:     annotation
+
+alma_conto:
+    resource: "@AlmaBundle/Controller/ContoController.php"
+    type:     annotation
+
+alma_stanza:
+    resource: "@AlmaBundle/Controller/StanzaController.php"
+    type:     annotation
+
+alma_prenotazioni:
+    resource: "@AlmaBundle/Controller/PrenotazioneController.php"
+    type:     annotation
+
+alma_tariffe:
+    resource: "@AlmaBundle/Controller/TariffaController.php"
+    type:     annotation
+
+alma_homepage:
+    resource: "@AlmaBundle/Controller/DefaultController.php"
+    type:     annotation

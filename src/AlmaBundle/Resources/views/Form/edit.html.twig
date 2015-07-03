@@ -1,0 +1,68 @@
+{% extends '::base.html.twig' %}
+
+{% form_theme edit_form 'AlmaBundle:Form:form_indietro.html.twig' %}
+
+{% block begin_page_level_plugin_style %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/bootstrap-datepicker/css/datepicker.css')}}" />
+{% endblock %}
+
+{% block body -%}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+            <h3 class="page-title">
+                Modifica {{ nomeEntity }}					<small>pagina per la modifica di {{ modificaDi }}</small>
+            </h3>
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <i class="fa fa-home"></i>
+                    <a href="index.html">Home</a>
+                    <i class="fa fa-angle-right"></i>
+                </li>
+                <li><a href="{{ path(url) }}">{{ nomeEntity }}</a><i class="fa fa-angle-right"></i></li>
+                <li><a href="#">Modifica</a></li>
+                <li class="pull-right">
+                    <div id="dashboard-report-range" class="dashboard-date-range tooltips" data-placement="top" data-original-title="Change dashboard date range">
+                        <i class="fa fa-calendar"></i>
+                        <span></span>
+                        <i class="fa fa-angle-down"></i>
+                    </div>
+                </li>
+            </ul>
+            <!-- END PAGE TITLE & BREADCRUMB-->
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-md-12">
+            <div class="portlet box green">
+                <div class="portlet-title">
+                    <div class="caption"><i class="fa fa-reorder"></i>Modificare i dati</div>
+                </div>
+                <div class="portlet-body">
+                    {{ form(edit_form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{%block  page_level_plugins %}
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/select2/select2.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-markdown/js/bootstrap-markdown.js')}}" ></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-markdown/lib/markdown.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js')}}" ></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-touchspin/bootstrap.touchspin.js')}}" ></script>
+{% endblock%}
+
+{%block  page_level_scripts %}
+    <script type="text/javascript" src="{{ asset('assets/scripts/form-components.js')}}"></script>
+{% endblock%}
+
+ {%block  jquery_page_document_ready %}
+     <script>
+         jQuery(document).ready(function() {
+             FormComponents.init();
+         });
+     </script>
+ {% endblock%}

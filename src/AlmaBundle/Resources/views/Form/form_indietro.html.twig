@@ -1,0 +1,11 @@
+{% extends 'AlmaBundle:Form:form_base.html.twig' %}
+
+{% block submit_widget %}
+    <div class="row">
+    {{ pulsante_indietro() }}
+    {% spaceless %}
+        {% set type = type|default('submit') %}
+        {{ block('button_widget') }}
+    {% endspaceless %}
+    </div>
+{% endblock submit_widget %}

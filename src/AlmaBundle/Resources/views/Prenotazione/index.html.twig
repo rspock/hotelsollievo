@@ -1,0 +1,172 @@
+{% extends '::base.html.twig' %}
+
+{% form_theme form_ricerca_prenotazione 'AlmaBundle:Form:form_inline.html.twig' %}
+{% form_theme formPrenotazione 'AlmaBundle:Form:form_base.html.twig' %}
+
+
+{% block begin_page_level_plugin_style %}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/bootstrap-datepicker/css/datepicker.css')}}" />
+{% endblock %}
+
+{% block body -%}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+            <h3 class="page-title">
+                Prenotazioni
+                <small>elenco di tutte le prenotazioni</small>
+            </h3>
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <i class="fa fa-home"></i>
+                    <a href="index.html">Home</a>
+                    <i class="fa fa-angle-right"></i>
+                </li>
+                <li><a href="{{ path("prenotazione") }}">Prenotazione</a><i class="fa fa-angle-right"></i></li>
+                <li><a href="#">Elenco</a></li>
+                <li class="pull-right">
+                    <div id="dashboard-report-range" class="dashboard-date-range tooltips" data-placement="top"
+                         data-original-title="Change dashboard date range">
+                        <i class="fa fa-calendar"></i>
+                        <span></span>
+                        <i class="fa fa-angle-down"></i>
+                    </div>
+                </li>
+            </ul>
+            <!-- END PAGE TITLE & BREADCRUMB-->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="portlet box blue">
+                <div class="portlet-title">
+                    <div class="caption"><i class="fa fa-reorder"></i>Ricerca</div>
+                </div>
+                <div class="portlet-body">
+                    {{ form_start(form_ricerca_prenotazione) }}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table>
+                                <tr>
+                                    <td>{{ form_label(form_ricerca_prenotazione.dataArrivo) }}</td>
+                                    <td>{{ form_widget(form_ricerca_prenotazione.dataArrivo) }}</td>
+                                    <td>{{ form_label(form_ricerca_prenotazione.dataPartenza) }}</td>
+                                    <td>{{ form_widget(form_ricerca_prenotazione.dataPartenza) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{ form_label(form_ricerca_prenotazione.numeroStanza) }}</td>
+                                    <td>{{ form_widget(form_ricerca_prenotazione.numeroStanza) }}</td>
+                                    <td>{{ form_label(form_ricerca_prenotazione.tipo) }}</td>
+                                    <td>{{ form_widget(form_ricerca_prenotazione.tipo) }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="submit" class="btn btn-primary pull-right" style="margin-left:20px" value="Ricerca">
+                            <a class="btn btn-default pull-right" href="{{ path("cancella_ricerca") }}">Cancella</a>
+                        </div>
+                    </div>
+                    {{ form_end(form_ricerca_prenotazione) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="portlet box green">
+                <div class="portlet-title">
+                    <div class="caption"><i class="fa fa-reorder"></i>Prenotazioni</div>
+                </div>
+
+                <div class="portlet-body">
+                    <div class="table-toolbar">
+                        <a href="javascript:void(0)" data-toggle="modal" data-target="#prenotazioneModal" class="btn green"><i class="fa fa-plus"></i></a>
+                        <a href="{{ path("prenotazione_paginata",{"paginazione":0}) }}" class="btn btn-default"> << </a>
+                        <a href="{{ path("prenotazione_paginata",{"paginazione":1}) }}" class="btn btn-default pull-right"> >> </a>
+                    </div>
+                    <table class="table table-striped table-hover table-bordered" id="ospite-elenco">
+                        <thead>
+                        <tr>
+                            <th colspan="2" style="text-align:right">{{ modalita }}</th>
+                            {% for cella in visualizzazione %}
+                                {% if not (loop.last)  %}
+                                    <th class="{{ cella.css }} ">{{ cella.label }}</th>
+                                {% endif %}
+                            {% endfor %}
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for stanza in stanze %}
+                               {% for letto in stanza.letti %}
+                                   <tr>
+                                       {% if loop.first %}
+                                            <td rowspan="{{ stanza.letti | length }}">Stanza {{ stanza.numero }}</td>
+                                       {% endif %}
+                                       <td>{{ letto.descrizione }}</td>
+                                       {% for prenotazione in visualizzazioneLetti[letto.id] %}
+                                       {% if prenotazione is not null %}
+                                           <td style="background-color: firebrick" align="center" valign="center"><a style="color: #000000" href="{{ path("prenotazione_edit",{"id":prenotazione}) }}"><i class="fa fa-edit"></i></a></td>
+                                       {% else %}
+                                           <td style="background-color: green"></td>
+                                       {% endif %}
+                                        {% endfor %}
+                                   </tr>
+                               {% endfor %}
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="prenotazioneModal" class="modal fade" role="dialog" aria-labelledby="mainLabel" aria-hidden="true">
+        {{ form_start(formPrenotazione) }}
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h3 id="mainLabel">Prenotazione</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{ form_rest(formPrenotazione) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Annulla</button>
+                    <input type="submit" class="btn btn-primary" id="voceSpesaConferma" value="Conferma">
+                </div>
+            </div>
+        </div>
+        {{ form_end(formPrenotazione) }}
+    </div>
+{% endblock %}
+
+
+{%block  page_level_plugins %}
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/select2/select2.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-markdown/js/bootstrap-markdown.js')}}" ></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-markdown/lib/markdown.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js')}}" ></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap-touchspin/bootstrap.touchspin.js')}}" ></script>
+{% endblock%}
+
+{%block  page_level_scripts %}
+    <script type="text/javascript" src="{{ asset('assets/scripts/form-components.js')}}"></script>
+{% endblock%}
+
+ {%block  jquery_page_document_ready %}
+     <script>
+         jQuery(document).ready(function() {
+             FormComponents.init();
+         });
+     </script>
+ {% endblock%}

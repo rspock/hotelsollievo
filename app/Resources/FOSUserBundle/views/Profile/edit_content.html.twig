@@ -1,0 +1,29 @@
+{% trans_default_domain 'FOSUserBundle' %} {% form_theme form
+'AlmaBundle:Form:form_base.html.twig' %}
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="portlet box green">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-reorder"></i>Inserire i dati
+				</div>
+			</div>
+			<div class="portlet-body">
+				<form action="{{ path('fos_user_profile_edit') }}" {{ form_enctype(form) }}
+					method="POST" class="form-horizontal">
+					<div class="form-body">
+						{{ form_widget(form) }}
+						<div class="row">
+							<div class="col-md-12">
+								<input type="submit" class="btn btn-primary pull-right"
+									value="{{ 'profile.edit.submit'|trans }}"/>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+

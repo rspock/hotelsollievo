@@ -1,0 +1,66 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+            <h3 class="page-title">
+                Elenco tariffe					<small>elenco di tutte le tariffe applicate</small>
+            </h3>
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <i class="fa fa-home"></i>
+                    <a href="index.html">Home</a>
+                    <i class="fa fa-angle-right"></i>
+                </li>
+                <li><a href="{{ path("tariffa")}}">Tariffe</a><i class="fa fa-angle-right"></i></li>
+                <li><a href="#">Elenco</a></li>
+                <li class="pull-right">
+                    <div id="dashboard-report-range" class="dashboard-date-range tooltips" data-placement="top" data-original-title="Change dashboard date range">
+                        <i class="fa fa-calendar"></i>
+                        <span></span>
+                        <i class="fa fa-angle-down"></i>
+                    </div>
+                </li>
+            </ul>
+            <!-- END PAGE TITLE & BREADCRUMB-->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="portlet">
+                <div class="portlet-body">
+                    <div class="table-toolbar">
+                        <div class="btn-group">
+                            <a href="{{ path('tariffa_new') }}"><button id="sample_editable_1_new" class="btn green"><i class="fa fa-plus"></i></button>
+                            </a>
+                        </div>
+                    </div>
+                    <table class="table table-striped table-hover table-bordered" id="tipi-macchina-elenco">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Data Inizio</th>
+                            <th>Data Fine</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for entity in entities %}
+                            <tr>
+                                <td><a href="{{ path('tariffa_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+                                <td>{% if entity.dataInizio %}{{ entity.dataInizio|date('Y-m-d H:i:s') }}{% endif %}</td>
+                                <td>{% if entity.dataFine %}{{ entity.dataFine|date('Y-m-d H:i:s') }}{% endif %}</td>
+                                <td>
+                                    {% include 'AlmaBundle:Base:entityAction.html.twig'
+                                    with {'urlPrefix': 'tariffa', 'id': entity.id} %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
