@@ -95,6 +95,7 @@
                             <th>Tipo</th>
                             <th>Data</th>
                             <th>Importo</th>
+                            <th>Note</th>
                             <th>Azioni</th>
                         </tr>
                         </thead>
@@ -105,10 +106,13 @@
                                 <td>{{ voceSpesa.tipo.descrizione }}</td>
                                 <td>{% if voceSpesa.dataRegistrazione %}{{ voceSpesa.dataRegistrazione|date('Y-m-d H:i:s') }}{% endif %}</td>
                                 <td>{{ voceSpesa.importo }}</td>
+                                <td>{{ voceSpesa.note }}</td>
                                 <td>
                                     {% if conto.stato == "APERTO" %}
-                                        <a href="javascript:void(0);"  onclick="mostraModaleModificaVoceSpesa('{{ voceSpesa.id }}',{{ voceSpesa.importo }},{{ voceSpesa.tipo.id }})" class="btn btn-sm purple"><i class="fa fa-edit"></i></a>
-                                        <a href="{{ path('voce_spesa_delete', { 'id': voceSpesa.id }) }}" class="btn btn-sm red" data-confirm="Confermi?" data-target="#dataConfirmModal" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
+                                        {% if voceSpesa.id is not null %}
+                                            <a href="javascript:void(0);"  onclick="mostraModaleModificaVoceSpesa('{{ voceSpesa.id }}',{{ voceSpesa.importo }},{{ voceSpesa.tipo.id }})" class="btn btn-sm purple"><i class="fa fa-edit"></i></a>
+                                            <a href="{{ path('voce_spesa_delete', { 'id': voceSpesa.id }) }}" class="btn btn-sm red" data-confirm="Confermi?" data-target="#dataConfirmModal" data-toggle="modal"><i class="fa fa-trash-o"></i></a>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                             </tr>
@@ -120,8 +124,16 @@
         </div>
     </div>
     <div class="row ">
-        <div class="col-md-12">
+        <div class="col-md-1">
             {{ pulsante_indietro() }}
+        </div>
+        <div class="col-md-2 pull-right">
+            {% if mostraSaldo %}
+            <a href="{{ path("conto_saldo",{"id":conto.id}) }}" class="btn btn-primary" data-confirm="Confermi il saldo del conto?" data-target="#dataConfirmModal" data-toggle="modal">Saldo</a>
+            {% endif %}
+            {% if mostraChiusura %}
+            <a href="{{ path("conto_chiusura",{"id":conto.id}) }}" class="btn btn-primary pull-right" data-confirm="Confermi la chiusura del conto?" data-target="#dataConfirmModal" data-toggle="modal">Chiudi</a>
+            {% endif %}
         </div>
     </div>
     {% if conto.stato == "APERTO" %}

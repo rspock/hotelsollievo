@@ -38,10 +38,24 @@ class Tariffa
     /**
      * @var TipoCamera
      *
-     * @ORM\ManyToOne(targetEntity="TipoCamera")
+     * @ORM\ManyToOne(targetEntity="TipoCamera",inversedBy="tariffe")
      * @ORM\JoinColumn(name="tipo_camera_id", referencedColumnName="id")
      **/
     private $tipoCamera;
+
+    /**
+     * @var \float
+     *
+     * @ORM\Column(name="importo", type="float")
+     */
+    private $importo;
+
+    /**
+     * @var \float
+     *
+     * @ORM\Column(name="importoMezzaPensione", type="float")
+     */
+    private $importoMezzaPensione;
 
 
     /**
@@ -119,4 +133,38 @@ class Tariffa
     {
         return $this->tipoCamera;
     }
+
+    /**
+     * @return float
+     */
+    public function getImporto()
+    {
+        return $this->importo;
+    }
+
+    /**
+     * @param float $importo
+     */
+    public function setImporto($importo)
+    {
+        $this->importo = $importo;
+    }
+
+    /**
+     * @return float
+     */
+    public function getImportoMezzaPensione()
+    {
+        return $this->importoMezzaPensione;
+    }
+
+    /**
+     * @param float $importoMezzaPensione
+     */
+    public function setImportoMezzaPensione($importoMezzaPensione)
+    {
+        $this->importoMezzaPensione = $importoMezzaPensione;
+    }
+
+
 }

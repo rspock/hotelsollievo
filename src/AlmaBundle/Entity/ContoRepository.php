@@ -40,4 +40,21 @@ class ContoRepository extends EntityRepository
 
         return $query->getResult();
     }
+
+    public function findUltimoChiuso($ospiteId){
+        $em = $this->getEntityManager();
+
+        $dql = "SELECT c FROM AlmaBundle:Conto c
+                JOIN c.persona p
+                WHERE p.id = :ospiteId
+                AND c.stato = :statoChiuso
+                ORDER BY c.dataPagamento DESC";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter("ospiteId",$ospiteId);
+        $query->setParameter("statoChiuso","CHIUSO");
+        $query->setMaxResults(1);
+
+        return $query->getOneOrNullResult();
+    }
 }

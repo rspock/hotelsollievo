@@ -27,6 +27,7 @@ class PrenotazioneType extends AbstractType
                 'property' => 'descrizione',
                 'expanded'=>false,
                 'multiple'=>true))
+            ->add('mezzaPensione','checkbox', array("required"=>false))
         ;
     }
     

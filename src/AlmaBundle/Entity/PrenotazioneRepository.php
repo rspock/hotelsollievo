@@ -13,5 +13,26 @@ use Doctrine\ORM\EntityRepository;
 class PrenotazioneRepository extends EntityRepository
 {
 
+    public function getPrenotazioniDaAPerPersona(\DateTime $da, \DateTime $a, $ospiteId){
+        $em = $this->getEntityManager();
+
+        $da_ = $da->format("Y-m-d");
+        $a_ = $a->format("Y-m-d");
+        $dql = "SELECT p FROM AlmaBundle:Prenotazione p
+                JOIN p.persona persona
+                WHERE persona.id = :ospiteId AND (
+                    (p.dataInizio > :da AND p.dataInizio < :a) OR
+                    (p.dataFine > :da AND p.dataFine < :a) OR
+                    (p.dataInizio <= :da AND p.dataFine >= :a)
+                )";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter("da",$da_);
+        $query->setParameter("a",$a_);
+        $query->setParameter("ospiteId",$ospiteId);
+
+        $risultato = $query->getResult();
+        return $risultato;
+    }
 
 }

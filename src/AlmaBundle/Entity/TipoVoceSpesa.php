@@ -42,9 +42,17 @@ class TipoVoceSpesa
      */
     private $negativa;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="eliminabile", type="boolean")
+     */
+    private $eliminabile;
+
     function __construct()
     {
         $this->negativa = false;
+        $this->eliminabile=true;
     }
 
 
@@ -120,6 +128,23 @@ class TipoVoceSpesa
     {
         $this->negativa = $negativa;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isEliminabile()
+    {
+        return $this->eliminabile;
+    }
+
+    /**
+     * @param boolean $eliminabile
+     */
+    public function setEliminabile($eliminabile)
+    {
+        $this->eliminabile = $eliminabile;
+    }
+
 
 
 }

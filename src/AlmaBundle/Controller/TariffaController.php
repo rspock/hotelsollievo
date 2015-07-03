@@ -53,7 +53,7 @@ class TariffaController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('tariffa_show', array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl('tariffa'));
         }
 
         return array(
@@ -76,7 +76,7 @@ class TariffaController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Inserisci'));
 
         return $form;
     }
@@ -161,7 +161,7 @@ class TariffaController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Modifica'));
 
         return $form;
     }

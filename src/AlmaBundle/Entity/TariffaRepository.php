@@ -12,4 +12,25 @@ use Doctrine\ORM\EntityRepository;
  */
 class TariffaRepository extends EntityRepository
 {
+    public function getTariffaDaAPerTipoCamera(\DateTime $da, \DateTime $a, $tipoCameraId){
+        $em = $this->getEntityManager();
+
+        $da_ = $da->format("Y-m-d");
+        $a_ = $a->format("Y-m-d");
+        $dql = "SELECT t FROM AlmaBundle:Tariffa t
+                JOIN t.tipoCamera tc
+                WHERE tc.id = :tipoCameraId AND (
+                    (t.dataInizio > :da AND t.dataInizio < :a) OR
+                    (t.dataFine > :da AND t.dataFine < :a) OR
+                    (t.dataInizio <= :da AND t.dataFine >= :a)
+                )";
+
+        $query = $em->createQuery($dql);
+        $query->setParameter("da",$da_);
+        $query->setParameter("a",$a_);
+        $query->setParameter("tipoCameraId",$tipoCameraId);
+
+        $risultato = $query->getResult();
+        return $risultato;
+    }
 }

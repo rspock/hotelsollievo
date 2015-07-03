@@ -1,0 +1,41 @@
+<br><br><br><br><br><br>
+<table>
+    <tr>
+        <td width="30%">
+            Per competenze dovute da
+        </td>
+        <td width="30%">&nbsp;</td>
+        <td width="30%">
+            {{ conto.persona.nome }} {{ conto.persona.cognome }}<br>
+            {{ conto.persona.indirizzoVia }}, {{ conto.persona.indirizzoCivico }}<br>
+            {{ conto.persona.indirizzoCitta }} - {{ conto.persona.indirizzoCap }}
+        </td>
+    </tr>
+</table>
+<br><br><br>
+<hr>
+&nbsp;
+<br>
+<b>SOGGIORNO HOTEL SOLLIEVO</b>
+<br>
+<hr>
+&nbsp;
+<br><br><br>
+<table>
+{% for voceSpesa in vociSpesa %}
+    <tr>
+        <td>{{ voceSpesa.tipo.descrizione }}</td>
+        <td>{{ voceSpesa.importo}}</td>
+    </tr>
+{% endfor %}
+</table>
+<br><br><br>
+<hr>
+&nbsp;
+<br>
+<table>
+    <tr>
+        <td>Totale</td>
+        <td>{{ conto.totale}}</td>
+    </tr>
+</table>

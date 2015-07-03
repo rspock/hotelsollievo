@@ -60,16 +60,17 @@ class Letto
      **/
     private $prenotazioni;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->prenotazioni = new \Doctrine\Common\Collections\ArrayCollection();
         $this->prenotato = false;
-        $this->occupato=false;
+        $this->occupato = false;
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -92,7 +93,7 @@ class Letto
     /**
      * Get prenotato
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getPrenotato()
     {
@@ -115,7 +116,7 @@ class Letto
     /**
      * Get occupato
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getOccupato()
     {

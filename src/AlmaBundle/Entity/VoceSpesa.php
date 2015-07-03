@@ -50,6 +50,20 @@ class VoceSpesa
     private $importo;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="note", type="text",nullable=true)
+     */
+    private $note;
+
+
+    /**
+     * @ORM\OneToOne(targetEntity="Prenotazione", mappedBy="caparra")
+     **/
+    private $prenotazione;
+
+
+    /**
      * Get id
      *
      * @return integer
@@ -135,4 +149,37 @@ class VoceSpesa
             $this->importo = $importo;
         }
     }
+
+    /**
+     * @return string
+     */
+    public function getNote()
+    {
+        return $this->note;
+    }
+
+    /**
+     * @param string $note
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrenotazione()
+    {
+        return $this->prenotazione;
+    }
+
+    /**
+     * @param mixed $prenotazione
+     */
+    public function setPrenotazione($prenotazione)
+    {
+        $this->prenotazione = $prenotazione;
+    }
+
 }

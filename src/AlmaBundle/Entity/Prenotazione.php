@@ -57,8 +57,16 @@ class Prenotazione
      **/
     private $caparra;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="mezzaPensione", type="boolean")
+     */
+    private $mezzaPensione;
+
     function __construct(){
         $this->letti = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->mezzaPensione = false;
 
     }
     /**
@@ -164,6 +172,23 @@ class Prenotazione
     {
         $this->caparra = $caparra;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isMezzaPensione()
+    {
+        return $this->mezzaPensione;
+    }
+
+    /**
+     * @param boolean $mezzaPensione
+     */
+    public function setMezzaPensione($mezzaPensione)
+    {
+        $this->mezzaPensione = $mezzaPensione;
+    }
+
 
 
 }

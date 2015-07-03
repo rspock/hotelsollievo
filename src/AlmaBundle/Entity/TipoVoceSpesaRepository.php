@@ -15,4 +15,8 @@ class TipoVoceSpesaRepository extends EntityRepository
     function findTipoCaparra(){
         return $this->findOneBy(array("descrizione"=>"Caparra prenotazione"));
     }
+
+    function findTipoPrenotazione(){
+        return $this->findOneBy(array("descrizione"=>"Prenotazione Letto"));
+    }
 }

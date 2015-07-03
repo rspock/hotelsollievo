@@ -13,8 +13,8 @@ use Doctrine\ORM\Query;
  */
 class LettoRepository extends EntityRepository
 {
-    public function getOccupazioneLetto($idLetto, \DateTime $da, \DateTime $a){
-        $risultato = $this->getOccupazioneLetto($idLetto,$da,$a);
+    public function getOccupazioneLetto($idLetto, \DateTime $da, \DateTime $a, $prenotazioneId = null){
+        $risultato = $this->getPrenotazioneLetto($idLetto,$da,$a,$prenotazioneId);
         if(is_null($risultato)){
             return false;
         }else{
@@ -22,7 +22,7 @@ class LettoRepository extends EntityRepository
         }
     }
 
-    public function getPrenotazioneLetto($idLetto, \DateTime $da, \DateTime $a){
+    public function getPrenotazioneLetto($idLetto, \DateTime $da, \DateTime $a, $prenotazioneId = null){
         $em = $this->getEntityManager();
 
         $da_ = $da->format("Y-m-d");
@@ -35,10 +35,17 @@ class LettoRepository extends EntityRepository
                     (p.dataInizio <= :da AND p.dataFine >= :a)
                 )";
 
+        if($prenotazioneId != null){
+            $dql .= " AND p.id != :prenotazioneId";
+        }
+
         $query = $em->createQuery($dql);
         $query->setParameter("da",$da_);
         $query->setParameter("a",$a_);
         $query->setParameter("idLetto",$idLetto);
+        if($prenotazioneId !=null){
+            $query->setParameter("prenotazioneId",$prenotazioneId);
+        }
 
         $risultato = $query->getOneOrNullResult();
         return is_null($risultato) ? null : $risultato["id"];

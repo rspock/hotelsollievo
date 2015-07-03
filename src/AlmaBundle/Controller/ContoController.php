@@ -8,11 +8,15 @@ use AlmaBundle\Entity\VoceSpesa;
 use AlmaBundle\Form\ContoType;
 use AlmaBundle\Form\DataClass\OspiteVoceSpesa;
 use AlmaBundle\Form\VoceSpesaType;
+use Doctrine\Common\Collections\ArrayCollection;
+use Proxies\__CG__\AlmaBundle\Entity\Prenotazione;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Validator\Constraints\DateTime;
+
 /**
  * Conto controller.
  *
@@ -49,14 +53,24 @@ class ContoController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $persona = $em->getRepository("AlmaBundle:Persona")->find($idPersona);
         if(!$persona->hasContoAperto()){
+            $ultimoContoChiuso = $em->getRepository("AlmaBundle:Conto")->findUltimoChiuso($idPersona);
             $conto = new Conto();
             $conto->setPersona($persona);
-            $conto->setDataApertura(new \DateTime());
+            if($ultimoContoChiuso != null){
+                $dataChiusuraUltimoConto = clone $ultimoContoChiuso->getDataPagamento();
+                $dataChiusuraUltimoConto->add(new \DateInterval("P1D"));
+                $dataChiusuraUltimoConto->setTime(0,0,0);
+                $conto->setDataApertura($dataChiusuraUltimoConto);
+            }else{
+                $conto->setDataApertura(new \DateTime());
+            }
             $conto->setStato("APERTO");
             $em->persist($conto);
             $em->flush();
+            $this->addSucces("Conto aperto correttamento");
+        }else{
+            $this->addErrore("Esiste già un conto aperto");
         }
-        $this->addSucces("Conto aperto correttamento");
         return $this->returnResponse($request);
     }
 
@@ -81,6 +95,26 @@ class ContoController extends BaseController
         return array(
             'entity'      => $entity,
         );
+    }
+
+    /**
+     * Finds and displays a Conto entity.
+     *
+     * @Route("/{id}/ricevuta", name="genera_ricevuta")
+     * @Method("GET")
+     * @Template()
+     */
+    public function ricevutaAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('AlmaBundle:Conto')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Conto entity.');
+        }
+
+        $this->get("generazione_documenti")->generaRicevutaConto($entity);
     }
 
     /**
@@ -237,6 +271,41 @@ class ContoController extends BaseController
     /**
      * Chiudi Conto entity.
      *
+     * @Route("/{id}/controlla_chiusura", name="conto_controlla_chiusura")
+     * @Method("GET")
+     * @Template("AlmaBundle:Conto:vociSpesa.html.twig")
+     */
+    public function controllaChiusuraAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $entity = $em->getRepository('AlmaBundle:Conto')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Conto entity.');
+        }
+
+        if($entity->getStato() != "APERTO"){
+            $referer = $request->headers->get('referer');
+            $this->addErrore("Il conto indicato risulta non essere aperto");
+            return new RedirectResponse($referer);
+        }
+
+        $vociSpesaPrenotazioni = $this->calcolaVociPrenotazione($entity);
+        foreach($vociSpesaPrenotazioni as $vociSpesaPrenotazione){
+            $entity->getVociSpesa()->add($vociSpesaPrenotazione);
+        }
+
+        $dati = $this->getDataVistaVociSpesa($entity);
+        $dati["mostraChiusura"] = true;
+        $dati["mostraSaldo"] = true;
+        return $dati;
+
+    }
+
+
+    /**
+     * Chiudi Conto entity.
+     *
      * @Route("/{id}/chiusura", name="conto_chiusura")
      * @Method("GET")
      */
@@ -248,6 +317,7 @@ class ContoController extends BaseController
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Conto entity.');
         }
+        $this->calcolaVociPrenotazione($entity,true);
 
         $entity->setDataPagamento(new \DateTime());
         $entity->setStato("CHIUSO");
@@ -255,14 +325,17 @@ class ContoController extends BaseController
 
         $conto = new Conto();
         $conto->setStato("APERTO");
-        $conto->setDataApertura(new \DateTime());
+        $dataApertura = new \DateTime();
+        $dataApertura->add(new \DateInterval("P1D"));
+        $dataApertura->setTime(0,0,0);
+        $conto->setDataApertura($dataApertura);
         $conto->setPersona($entity->getPersona());
         $em->persist($conto);
 
         $em->flush();
 
-        $referer = $request->headers->get('referer');
-        return new RedirectResponse($referer);
+        $this->addSucces("Conto chiuso correttamente");
+        return $this->redirect($this->generateUrl('ospite'));
     }
 
     /**
@@ -280,14 +353,16 @@ class ContoController extends BaseController
             throw $this->createNotFoundException('Unable to find Conto entity.');
         }
 
+        $this->calcolaVociPrenotazione($entity,true);
+
         $entity->setDataPagamento(new \DateTime());
         $entity->setStato("CHIUSO");
         $entity->setSaldo(true);
         $em->persist($entity);
         $em->flush();
 
-        $referer = $request->headers->get('referer');
-        return new RedirectResponse($referer);
+        $this->addSucces("Conto chiuso correttamente");
+        return $this->redirect($this->generateUrl('ospite'));
     }
 
     /**
@@ -306,22 +381,10 @@ class ContoController extends BaseController
             throw $this->createNotFoundException('Unable to find Conto entity.');
         }
 
-        $modificaVoceSpesaForm = $this->createVoceSpesaEditForm(new VoceSpesa());
-
-        $formOspiteVoceSpesa = $this->createOspiteVoceSpesaForm(new OspiteVoceSpesa());
-
-        $tipiVociSpesa = $em->getRepository('AlmaBundle:TipoVoceSpesa')->findAll();
-        $serializer = $this->container->get('jms_serializer');
-        $tipiVociSpesaJson = $serializer->serialize($tipiVociSpesa, 'json');
-
-
-        return array(
-            'conto' => $entity,
-            'vociSpesa' => $entity->getVociSpesa(),
-            'modifica_voce_spesa_form' => $modificaVoceSpesaForm->createView(),
-            'voce_spesa_form'=>$formOspiteVoceSpesa->createView(),
-            'tipi_voci_spesa' =>$tipiVociSpesaJson
-        );
+        $dati = $this->getDataVistaVociSpesa($entity);
+        $dati["mostraChiusura"] = false;
+        $dati["mostraSaldo"] = false;
+        return $dati;
     }
 
 
@@ -391,5 +454,94 @@ class ContoController extends BaseController
 
         $referer = $request->headers->get('referer');
         return new RedirectResponse($referer);
+    }
+
+
+    /**
+     * Calcola l'importo relativo alla prenotazione per il periodo del conto
+     * @param Conto $conto
+     * @return ArrayCollection
+     */
+    private function calcolaVociPrenotazione($conto, $persisti=false){
+        $vociSpesaPrenotazioni = new ArrayCollection();
+        $em = $this->getDoctrine()->getEntityManager();
+        $dataApertuaConto = $conto->getDataApertura();
+        $dataChiusuraConto = $conto->getDataPagamento()!=null ? $conto->getDataPagamento() : new \DateTime();
+        //TODO da rimuovere
+        //$dataFake = new \DateTime("2015-08-28 00:00:00");
+        //$dataChiusuraConto = $conto->getDataPagamento()!=null ? $conto->getDataPagamento() : $dataFake;
+
+        $prenotazioni = $em->getRepository("AlmaBundle:Prenotazione")->getPrenotazioniDaAPerPersona($dataApertuaConto,$dataChiusuraConto,$conto->getPersona()->getId());
+        $tipoVoceSpesaPrenotazione = $em->getRepository("AlmaBundle:TipoVoceSpesa")->findTipoPrenotazione();
+        foreach($prenotazioni as $prenotazione){
+            //calcolo l'intervallo da considerare tra gli estremi del conto e quella della prenotazione
+            $dataInizioContoPrenotazione = $this->getMaxDate($dataApertuaConto,$prenotazione->getDataInizio());
+            $dataFineContoPrenotazione = $this->getMinDate($dataChiusuraConto,$prenotazione->getDataFine());
+            //trovo tutte le possibili tariffe su questo intervallo e per il tipo di ogni letto della prenotazione
+            foreach($prenotazione->getLetti() as $letto){
+                $tipoStanzaId = $letto->getStanza()->getTipo()->getId();
+                $tariffe = $em->getRepository("AlmaBundle:Tariffa")->getTariffaDaAPerTipoCamera($dataInizioContoPrenotazione,$dataFineContoPrenotazione,$tipoStanzaId);
+                foreach($tariffe as $tariffa){
+                    //trovo l'intervallo di date intersecando il periodo della tariffa con il periodo della prenotazione
+                    $dataIntervalloInizio=$this->getMaxDate($dataInizioContoPrenotazione,$tariffa->getDataInizio());
+                    $dataIntervalloFine = $this->getMinDate($dataFineContoPrenotazione,$tariffa->getDataFine());
+                    //calcolo i giorni
+                    $giorni = $dataIntervalloFine->diff($dataIntervalloInizio)->d;
+                    $voceSpesa = new VoceSpesa();
+                    $voceSpesa->setTipo($tipoVoceSpesaPrenotazione);
+                    $voceSpesa->setConto($conto);
+                    $voceSpesa->setDataRegistrazione(new \DateTime());
+                    $importoGiornaliero=0;
+                    if($prenotazione->isMezzaPensione()){
+                        $importoGiornaliero= $tariffa->getImportoMezzaPensione();
+                    }else{
+                        $importoGiornaliero= $tariffa->getImporto();
+                    }
+                    $voceSpesa->setImporto($giorni*$importoGiornaliero);
+
+                    $voceSpesa->setNote("Prenotazione: ".$prenotazione->getId()." tariffa: ".
+                        $tariffa->getId()." importo giornaliero ".$importoGiornaliero." periodo da: ".$dataIntervalloInizio->format("d:m:Y")." periodo a ".$dataIntervalloFine->format("d:m:Y"));
+                    $vociSpesaPrenotazioni->add($voceSpesa);
+                    if($persisti){
+                        $em->persist($voceSpesa);
+                    }
+                }
+            }
+
+        }
+        if($persisti){
+            $em->flush();
+        }
+
+        return $vociSpesaPrenotazioni;
+    }
+
+    private function getMinDate(\DateTime $d1, \DateTime $d2){
+        return $d1>$d2 ? $d2 : $d1;
+    }
+
+    private function getMaxDate(\DateTime $d1, \DateTime $d2){
+        return $d1>$d2 ? $d1 : $d2;
+    }
+
+    private function getDataVistaVociSpesa(Conto $conto){
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $modificaVoceSpesaForm = $this->createVoceSpesaEditForm(new VoceSpesa());
+
+        $formOspiteVoceSpesa = $this->createOspiteVoceSpesaForm(new OspiteVoceSpesa());
+
+        $tipiVociSpesa = $em->getRepository('AlmaBundle:TipoVoceSpesa')->findAll();
+        $serializer = $this->container->get('jms_serializer');
+        $tipiVociSpesaJson = $serializer->serialize($tipiVociSpesa, 'json');
+
+
+        return array(
+            'conto' => $conto,
+            'vociSpesa' => $conto->getVociSpesa(),
+            'modifica_voce_spesa_form' => $modificaVoceSpesaForm->createView(),
+            'voce_spesa_form'=>$formOspiteVoceSpesa->createView(),
+            'tipi_voci_spesa' =>$tipiVociSpesaJson
+        );
     }
 }

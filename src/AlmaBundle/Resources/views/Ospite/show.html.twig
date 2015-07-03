@@ -150,11 +150,13 @@
                                     <div class="clearfix">
                                         <a href="{{ path('voci_spesa', { 'id': conto.id }) }}" class="btn blue"><i class="fa fa-list"></i></a>                                       </a>
                                         {% if conto.stato == "APERTO" %}
-                                            <a href="{{ path('conto_chiusura', { 'id': conto.id }) }}" data-confirm="Confermi la chiusura del conto?" data-target="#dataConfirmModal" data-toggle="modal">
-                                                <button id="chiusura-conto" class="btn green"><i class="fa fa-pencil-square"></i></button>
+                                            <a href="{{ path('conto_controlla_chiusura', { 'id': conto.id }) }}">
+                                                <button class="btn yellow"><i class="fa fa-archive"></i></button>
                                             </a>
-                                            <a href="{{ path('conto_saldo', { 'id': conto.id }) }}" data-confirm="Confermi il completo saldo del conto?" data-target="#dataConfirmModal" data-toggle="modal">
-                                                <button id="saldo-conto" class="btn yellow"><i class="fa fa-archive"></i></button>
+                                        {% endif %}
+                                        {% if conto.stato == "CHIUSO" %}
+                                            <a href="{{ path('genera_ricevuta', { 'id': conto.id }) }}">
+                                                <button class="btn gray"><i class="fa fa-file-text"></i></button>
                                             </a>
                                         {% endif %}
 

@@ -4,3 +4,8 @@ services:
     arguments: [@service_container]
     tags:
       - { name: twig.extension }
+
+  generazione_documenti:
+      class: AlmaBundle\Service\GeneratoreDocumenti
+      arguments: [@service_container, @twig ]
+

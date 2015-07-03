@@ -117,13 +117,18 @@ class Persona
      **/
     private $letti;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Prenotazione", mappedBy="persona")
+     **/
+    private $prenotazioni;
 
-    function __construct(){
+
+    function __construct()
+    {
         $this->conti = new ArrayCollection();
         $this->letti = new ArrayCollection();
-
+        $this->prenotazioni = new ArrayCollection();
     }
-
 
     /**
      * Get id
@@ -406,6 +411,24 @@ class Persona
     {
         $this->letti = $letti;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getPrenotazioni()
+    {
+        return $this->prenotazioni;
+    }
+
+    /**
+     * @param ArrayCollection $prenotazioni
+     */
+    public function setPrenotazioni($prenotazioni)
+    {
+        $this->prenotazioni = $prenotazioni;
+    }
+
+
 
     /**
      * @return string

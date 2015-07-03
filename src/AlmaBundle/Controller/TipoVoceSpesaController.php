@@ -28,7 +28,7 @@ class TipoVoceSpesaController extends BaseController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('AlmaBundle:TipoVoceSpesa')->findAll();
+        $entities = $em->getRepository('AlmaBundle:TipoVoceSpesa')->findBy(array("eliminabile"=>true));
 
         return array(
             'entities' => $entities,
@@ -210,6 +210,10 @@ class TipoVoceSpesaController extends BaseController
             throw $this->createNotFoundException('Unable to find TipoVoceSpesa entity.');
         }
 
+        if(!$entity->isEliminabile()){
+            $this->addErrore("Tipo di voce spesa non eliminabile");
+            return $this->redirect($this->generateUrl('tipovocespesa'));
+        }
         $em->remove($entity);
         $em->flush();
 

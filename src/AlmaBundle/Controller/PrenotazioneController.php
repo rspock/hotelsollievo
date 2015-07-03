@@ -245,9 +245,83 @@ class PrenotazioneController extends BaseController
      *
      * @Route("/{id}/edit", name="prenotazione_edit")
      * @Method("GET")
-     * @Template()
+     * @Template("AlmaBundle:Prenotazione:edit.html.twig")
      */
     public function editAction($id){
-        $this->addErrore("Funzione non consentita");
-        return new RedirectResponse($this->generateUrl("prenotazione"));    }
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('AlmaBundle:Prenotazione')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Ospite entity.');
+        }
+
+        $editForm = $this->createEditForm($entity);
+
+        return array(
+            'entity'      => $entity,
+            'edit_form'   => $editForm->createView(),
+        );
+    }
+
+    /**
+     * Edits an existing Ospite entity.
+     *
+     * @Route("/{id}", name="prenotazione_update")
+     * @Method("PUT")
+     * @Template("AlmaBundle:Prenotazione:edit.html.twig")
+     */
+    public function updateAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('AlmaBundle:Prenotazione')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Ospite entity.');
+        }
+
+        $editForm = $this->createEditForm($entity);
+
+        $editForm->handleRequest($request);
+
+        if ($editForm->isValid()) {
+            //controllo che non ci siano prenotazioni per la stessa data
+            foreach($entity->getLetti() as $letto){
+                if($em->getRepository('AlmaBundle:Letto')->getOccupazioneLetto($letto->getId(),
+                        $entity->getDataInizio(),$entity->getDataFine(),$entity->getId())){
+
+                    $this->addErrore("Il letto ".$letto->getDescrizione()." risulta occupato per il periodo indicato");
+                    return new RedirectResponse($this->generateUrl("prenotazione"));
+                }
+            }
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('prenotazione'));
+        }
+
+        return array(
+            'entity'      => $entity,
+            'edit_form'   => $editForm->createView()
+        );
+    }
+
+    /**
+     * Creates a form to edit a Ospite entity.
+     *
+     * @param Prenotazione $entity The entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createEditForm(Prenotazione $entity)
+    {
+        $form = $this->createForm(new PrenotazioneType(), $entity, array(
+            'action' => $this->generateUrl('prenotazione_update', array('id' => $entity->getId())),
+            'method' => 'PUT',
+        ));
+
+        $form->add('submit', 'submit', array('label' => 'Modifica'));
+
+        return $form;
+    }
 }

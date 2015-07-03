@@ -205,7 +205,7 @@ class OspiteController extends BaseController
         if ($editForm->isValid()) {
             $em->flush();
 
-            return $this->redirect($this->generateUrl('ospite_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('ospite'));
         }
 
         return array(

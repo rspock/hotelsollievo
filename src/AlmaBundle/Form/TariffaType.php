@@ -17,6 +17,8 @@ class TariffaType extends AbstractType
         $builder
             ->add('dataInizio','date' , array('widget' => 'single_text','input' => 'datetime','format' => 'dd/MM/yyyy'))
             ->add('dataFine','date' , array('widget' => 'single_text','input' => 'datetime','format' => 'dd/MM/yyyy'))
+            ->add('importo',"number")
+            ->add('importoMezzaPensione',"number")
             ->add('tipoCamera','entity',array(
                 'class' => 'AlmaBundle:TipoCamera',
                 'property' => 'nome',
