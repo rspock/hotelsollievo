@@ -19,9 +19,10 @@ class OspiteType extends AbstractType
         $builder
             ->add('nome')
             ->add('cognome')
-            ->add('codiceFiscale')
-            ->add('numeroDocumento',null,array('label'=>"Documento identità",'required'=>true))
-            ->add('dataNascita', 'date' , array('widget' => 'single_text','input' => 'datetime','format' => 'dd/MM/yyyy'))
+            ->add('codiceFiscale',null,array('required'=>false))
+            ->add('numeroDocumento',null,array('label'=>"Documento identità",'required'=>false))
+            ->add('dataDocumento',null,array('label'=>"Data Documento identità",'required'=>false))
+            ->add('dataNascita', 'date' , array('widget' => 'single_text','input' => 'datetime','format' => 'dd/MM/yyyy','required'=>false))
             ->add('indirizzoVia',null,array('required'=>false))
             ->add('indirizzoCivico',null,array('required'=>false))
             ->add('indirizzoCap',null,array('required'=>false))

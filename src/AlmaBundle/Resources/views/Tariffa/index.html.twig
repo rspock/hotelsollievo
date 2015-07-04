@@ -43,6 +43,7 @@
                             <th>Data Inizio</th>
                             <th>Data Fine</th>
                             <th>Importi</th>
+                            <th>Tipo camera</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -53,7 +54,7 @@
                                 <td>{% if entity.dataInizio %}{{ entity.dataInizio|date('d-m-Y') }}{% endif %}</td>
                                 <td>{% if entity.dataFine %}{{ entity.dataFine|date('d-m-Y') }}{% endif %}</td>
                                 <td>{{ entity.importo }} / {{ entity.importoMezzaPensione }}</td>
-
+                                <td>{{ entity.tipoCamera.nome }}</td>
                                 <td>
                                     {% include 'AlmaBundle:Base:entityAction.html.twig'
                                     with {'urlPrefix': 'tariffa', 'id': entity.id} %}

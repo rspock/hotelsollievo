@@ -46,7 +46,7 @@ class Persona
     /**
      * @var string
      *
-     * @ORM\Column(name="codiceFiscale", type="string", length=20, unique=true)
+     * @ORM\Column(name="codiceFiscale", type="string", length=20, unique=true,nullable=true)
      */
     private $codiceFiscale;
 
@@ -56,6 +56,13 @@ class Persona
      * @ORM\Column(name="dataNascita", type="date",nullable=true)
      */
     private $dataNascita;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="luogoNascita", type="string", length=255,nullable=true)
+     */
+    private $luogoNascita;
 
     /**
      * @var string
@@ -95,10 +102,16 @@ class Persona
     /**
      * @var string
      *
-     * @ORM\Column(name="documento", type="string", length=255,nullable=true)
+     * @ORM\Column(name="numeroDocumento", type="string", length=255,nullable=true)
      */
     private $numeroDocumento;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="dataDocumento", type="date",nullable=true)
+     */
+    private $dataDocumento;
 
     /**
      * @var string
@@ -426,6 +439,38 @@ class Persona
     public function setPrenotazioni($prenotazioni)
     {
         $this->prenotazioni = $prenotazioni;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLuogoNascita()
+    {
+        return $this->luogoNascita;
+    }
+
+    /**
+     * @param string $luogoNascita
+     */
+    public function setLuogoNascita($luogoNascita)
+    {
+        $this->luogoNascita = $luogoNascita;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataDocumento()
+    {
+        return $this->dataDocumento;
+    }
+
+    /**
+     * @param string $dataDocumento
+     */
+    public function setDataDocumento($dataDocumento)
+    {
+        $this->dataDocumento = $dataDocumento;
     }
 
 

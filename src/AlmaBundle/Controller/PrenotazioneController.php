@@ -92,7 +92,7 @@ class PrenotazioneController extends BaseController
                 $ricercaPrenotazione->setPeriodo("mesi");
                 $request->getSession()->set("ricerca_prenotazioni", $ricercaPrenotazione);
 
-            }elseif ($intervallo->days > 30){
+            }elseif ($intervallo->days > 28){
                 $visualizzazione[0]["label"]=$dataArrivo->format("W");
                 $visualizzazione[0]["css"] = "";
                 $visualizzazione[0]["dataRiferimento"] = clone $dataArrivo;
@@ -111,7 +111,7 @@ class PrenotazioneController extends BaseController
             }
         }
         if(count($visualizzazione)==0){
-            $numeroGiorni = $intervallo != null ? $intervallo->days : 30;
+            $numeroGiorni = $intervallo != null ? $intervallo->days : 28;
             $visualizzazione[0]["label"]=$dataArrivo->format("d");
             $visualizzazione[0]["css"] = "";
             $visualizzazione[0]["dataRiferimento"] = clone $dataArrivo;
@@ -119,10 +119,11 @@ class PrenotazioneController extends BaseController
                 $visualizzazione[$i]["label"]=$dataArrivo->add(new \DateInterval("P1D"))->format("d");
                 if($dataArrivo->format("N") == 7 || $dataArrivo->format("N") == 6){
                     $visualizzazione[$i]["css"] = "festivo";
-                }else if ($dataArrivo->format("d") == $adesso->format("d")){
-                    $visualizzazione[$i]["css"] = "oggi";
                 }else{
                     $visualizzazione[$i]["css"] = "";
+                }
+                if($dataArrivo->format("d") == $adesso->format("d")){
+                    $visualizzazione[$i]["css"] = "oggi";
                 }
                 $visualizzazione[$i]["dataRiferimento"] = clone $dataArrivo;
             }
