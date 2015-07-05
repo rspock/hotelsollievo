@@ -8,6 +8,7 @@
 
 namespace AlmaBundle\Service;
 
+use AlmaBundle\Entity\Ricevuta;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use AlmaBundle\Entity\Conto;
 
@@ -18,6 +19,7 @@ class GeneratoreDocumenti {
     private $pdfObject;
     private $ragioneSociale;
     private $pathLogo;
+    private $em;
 
     function __construct(ContainerInterface $container, \Twig_Environment $twig)
     {
@@ -27,13 +29,36 @@ class GeneratoreDocumenti {
         $this->ragioneSociale = $container->getParameter("ragioneSociale");
         $this->pathLogo = $container->getParameter("pathLogo");
         $this->pdfObject = $container->get("white_october.tcpdf")->create();
+        $this->em = $container->get('doctrine')->getEntityManager();
     }
 
     function generaRicevutaConto(Conto $conto){
+
+        if($conto->getRicevuta() != null){
+            throw new \Exception("Ricevuta già generata per il conto indicato");
+        }
+
+        $prossimoNumero = $this->em->getRepository('AlmaBundle:Ricevuta')->getProssimoNumero();
+
+        $ricevuta = new Ricevuta();
+        $ricevuta->setConto($conto);
+        $ricevuta->setNumero($prossimoNumero);
+        $ricevuta->setData(new \DateTime());
+        $ricevuta->setMime("application/pdf");
+        $ricevuta->setNome("Ricevuta Nr ".$prossimoNumero." - ".$ricevuta->getData()->format("d-m-Y").".pdf");
+        $ricevuta->setPercorso($this->container->getParameter("pathDocumenti").$ricevuta->getNome());
+
+        $conto->setRicevuta($ricevuta);
+
+        $this->em->persist($ricevuta);
+        $this->em->persist($conto);
+        $this->em->flush();
+
         $docHtml = $this->twig->render("AlmaBundle:Documenti:ricevuta.html.twig",
             array(
                 'conto' => $conto,
-                'vociSpesa' => $conto->getVociSpesa()
+                'vociSpesa' => $conto->getVociSpesa(),
+                'numero' => $prossimoNumero
             )
         );
 
@@ -63,7 +88,7 @@ class GeneratoreDocumenti {
         $this->pdfObject->writeHTML($docHtml, true, 0, true, 0);
 
         $this->pdfObject->lastPage();
-        $this->pdfObject->Output('ricevuta.pdf', 'I');
+        $this->pdfObject->Output($ricevuta->getPercorso(), 'FD');
 
     }
 }

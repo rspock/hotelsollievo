@@ -19,8 +19,13 @@ class VoceSpesaType extends AbstractType
             if(strpos($label,"Caparra prenotazione") !== false ){
                 continue;
             }
+            if(strpos($label,"Prenotazione Letto") !== false ){
+                continue;
+            }
             $this->tipiVociSpesa[$tipoVoceSpesa->getId()] = $label ;
         }
+        $this->tipiVociSpesa[-1] = "Altro";
+
     }
 
     /**

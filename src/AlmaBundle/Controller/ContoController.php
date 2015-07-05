@@ -334,6 +334,8 @@ class ContoController extends BaseController
 
         $em->flush();
 
+        $this->get("generazione_documenti")->generaRicevutaConto($entity);
+
         $this->addSucces("Conto chiuso correttamente");
         return $this->redirect($this->generateUrl('ospite'));
     }
@@ -360,6 +362,9 @@ class ContoController extends BaseController
         $entity->setSaldo(true);
         $em->persist($entity);
         $em->flush();
+
+        $this->get("generazione_documenti")->generaRicevutaConto($entity);
+
 
         $this->addSucces("Conto chiuso correttamente");
         return $this->redirect($this->generateUrl('ospite'));

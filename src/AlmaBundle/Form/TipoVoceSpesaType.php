@@ -16,8 +16,8 @@ class TipoVoceSpesaType extends AbstractType
     {
         $builder
             ->add('descrizione')
-            ->add('prezzoStandard')
-            ->add('negativa')
+            ->add('prezzoStandard',"number",array("required"=>false))
+            ->add('negativa',"checkbox",array("required"=>false))
         ;
     }
     

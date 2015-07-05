@@ -62,6 +62,13 @@ class Conto
      **/
     private $vociSpesa;
 
+
+    /**
+     * @ORM\OneToOne(targetEntity="Ricevuta", mappedBy="conto")
+     * @ORM\JoinColumn(name="ricevuta_id", referencedColumnName="id",nullable=true)
+     **/
+    private $ricevuta;
+
     function __construct()
     {
         $this->vociSpesa = new ArrayCollection();
@@ -201,6 +208,24 @@ class Conto
     {
         $this->vociSpesa = $vociSpesa;
     }
+
+    /**
+     * @return Ricevuta
+     */
+    public function getRicevuta()
+    {
+        return $this->ricevuta;
+    }
+
+    /**
+     * @param Ricevuta $ricevuta
+     */
+    public function setRicevuta($ricevuta)
+    {
+        $this->ricevuta = $ricevuta;
+    }
+
+
 
 
     public function getTotale(){
