@@ -46,7 +46,8 @@ class GeneratoreDocumenti {
         $ricevuta->setData(new \DateTime());
         $ricevuta->setMime("application/pdf");
         $ricevuta->setNome("Ricevuta Nr ".$prossimoNumero." - ".$ricevuta->getData()->format("d-m-Y").".pdf");
-        $ricevuta->setPercorso($this->container->getParameter("pathDocumenti").$ricevuta->getNome());
+        $percorso=str_replace(' ', '_', $this->container->getParameter("pathDocumenti").$ricevuta->getNome());
+        $ricevuta->setPercorso($percorso);
 
         $conto->setRicevuta($ricevuta);
 

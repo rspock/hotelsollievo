@@ -89,7 +89,7 @@
                     <table class="table table-striped table-hover table-bordered" id="ospite-elenco">
                         <thead>
                         <tr>
-                            <th colspan="2" style="text-align:right">{{ modalita }}</th>
+                            <th style="text-align:right">{{ modalita }}</th>
                             {% for cella in visualizzazione %}
                                 {% if not (loop.last)  %}
                                     <th class="{{ cella.css }} ">{{ cella.label }}</th>
@@ -102,9 +102,6 @@
                             {% for stanza in stanze %}
                                {% for letto in stanza.letti %}
                                    <tr>
-                                       {% if loop.first %}
-                                            <td rowspan="{{ stanza.letti | length }}">Stanza {{ stanza.numero }}</td>
-                                       {% endif %}
                                        <td>{{ letto.descrizione }}</td>
                                        {% for prenotazione in visualizzazioneLetti[letto.id] %}
                                        {% if prenotazione is not null %}

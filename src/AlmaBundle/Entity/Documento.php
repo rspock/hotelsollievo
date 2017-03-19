@@ -23,42 +23,42 @@ class Documento
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="data", type="datetime")
      */
-    private $data;
+    protected $data;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mime", type="string", length=255, nullable=true)
      */
-    private $mime;
+    protected $mime;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="dimensione", type="integer", nullable=true)
      */
-    private $dimensione;
+    protected $dimensione;
 
     /**
      * @var string
      *
      * @ORM\Column(name="percorso", type="string", length=1000)
      */
-    private $percorso;
+    protected $percorso;
 
     /**
      * @var string
      *
      * @ORM\Column(name="nome", type="string", length=255)
      */
-    private $nome;
+    protected $nome;
 
 
     /**

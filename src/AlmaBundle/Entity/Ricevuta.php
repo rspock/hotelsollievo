@@ -12,14 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Ricevuta extends Documento
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var integer
@@ -35,16 +27,6 @@ class Ricevuta extends Documento
      **/
     private $conto;
 
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set numero

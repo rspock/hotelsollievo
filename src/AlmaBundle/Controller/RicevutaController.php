@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use AlmaBundle\Entity\Ricevuta;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Ricevuta controller.
@@ -52,8 +53,15 @@ class RicevutaController extends Controller
             throw $this->createNotFoundException('Unable to find Ricevuta entity.');
         }
 
-        return array(
-            'entity'      => $entity,
-        );
+        $content = file_get_contents($entity->getPercorso());
+
+        $response = new Response();
+
+        //set headers
+        $response->headers->set('Content-Type', $entity->getMime());
+        $response->headers->set('Content-Disposition', 'attachment;filename="'.$entity->getNome());
+
+        $response->setContent($content);
+        return $response;
     }
 }

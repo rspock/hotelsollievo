@@ -9,7 +9,6 @@ use AlmaBundle\Form\ContoType;
 use AlmaBundle\Form\DataClass\OspiteVoceSpesa;
 use AlmaBundle\Form\VoceSpesaType;
 use Doctrine\Common\Collections\ArrayCollection;
-use Proxies\__CG__\AlmaBundle\Entity\Prenotazione;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

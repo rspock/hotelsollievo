@@ -26,6 +26,10 @@ alma_tariffe:
     resource: "@AlmaBundle/Controller/TariffaController.php"
     type:     annotation
 
+alma_ricevute:
+    resource: "@AlmaBundle/Controller/RicevutaController.php"
+    type:     annotation
+
 alma_homepage:
     resource: "@AlmaBundle/Controller/DefaultController.php"
     type:     annotation

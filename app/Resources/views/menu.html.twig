@@ -123,6 +123,20 @@
                 </ul>
             </li>
         {% endif %}
+        {% if app.user is not null and is_granted('ROLE_SUPER_ADMIN') or true %}
+            <li class="">
+                <a href="javascript:;">
+                    <i class="fa fa-sitemap"></i>
+                    <span class="title">Ricevute</span>
+                    <span class="arrow "></span>
+                </a>
+                <ul class="sub-menu">
+                    <li >
+                        <a href="{{ path('ricevuta')}}">Elenco</a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
         {#
         <li class="">
             <a href="javascript:;">
